@@ -375,6 +375,72 @@ function updateCounterUI() {
 
         // Запуск
         loadData();
+        // === 5. ЛОГИКА СВАЙПА (ВЛЕВО / ВПРАВО) ===
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        const textCardElement = document.querySelector('.text-card');
+
+        // Ловим начало касания
+        textCardElement.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, {passive: true});
+
+        // Ловим конец касания
+        textCardElement.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, {passive: true});
+
+        function handleSwipe() {
+            const listData = db[currentListKey];
+            const diffX = touchStartX - touchEndX;
+            const diffY = Math.abs(touchStartY - touchEndY);
+            
+            // Если палец ушел по вертикали сильнее, чем по горизонтали — это прокрутка текста, игнорируем!
+            if (diffY > Math.abs(diffX)) return;
+
+            // Если свайпнули влево (Следующий зикр)
+            if (diffX > 50) {
+                if (currentIndex < listData.length - 1) {
+                    currentIndex++;
+                    animateCard('slide-next');
+                } else {
+                    tg.HapticFeedback.notificationOccurred('error'); // Вибрация ошибки (конец списка)
+                }
+            } 
+            // Если свайпнули вправо (Предыдущий зикр)
+            else if (diffX < -50) {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    animateCard('slide-prev');
+                } else {
+                    tg.HapticFeedback.notificationOccurred('error'); // Вибрация ошибки (начало списка)
+                }
+            }
+        }
+
+        // Функция для перезапуска анимации и отрисовки нового текста
+        function animateCard(animationClass) {
+            stopListening(); // Выключаем микрофон при перелистывании
+            
+            // Убираем старые классы анимации
+            textCardElement.classList.remove('slide-next', 'slide-prev');
+            
+            // Хак для перезапуска анимации в браузере
+            void textCardElement.offsetWidth; 
+            
+            // Добавляем новую анимацию и рисуем текст
+            textCardElement.classList.add(animationClass);
+            renderDetail();
+            
+            // Легкая вибрация при успешном перелистывании
+            tg.HapticFeedback.impactOccurred('light'); 
+        };
     </script>
 </body>
 </html>

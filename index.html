@@ -99,16 +99,22 @@
 
 
 /* ИДЕАЛЬНЫЙ АРАБСКИЙ ТЕКСТ (Как на скринах) */
+/* ИДЕАЛЬНЫЙ АРАБСКИЙ ТЕКСТ */
         .arabic-text { 
             font-family: 'Amiri', serif; 
-            font-size: 28px; /* Идеальный размер, не слишком огромный */
-            line-height: 2.2; /* Аккуратный интервал, огласовки не слипаются */
+            font-size: 28px; 
+            line-height: 2.6; /* Даем максимум воздуха между строками */
             margin-bottom: 25px; 
             direction: rtl; 
             color: #111;
             text-align: center;
+            
+            /* --- НОВЫЕ НАСТРОЙКИ ДЛЯ ЧИСТОТЫ ТЕКСТА --- */
+            letter-spacing: normal !important; /* ЗАПРЕЩАЕМ ломать вязь внутри слова */
+            word-spacing: 4px; /* Делаем четкие пробелы МЕЖДУ словами */
+            padding: 10px 5px; /* Защита от обрезания верхних и нижних огласовок */
+            text-rendering: optimizeLegibility; /* Браузер будет отрисовывать самые красивые соединения букв */
         }
-        
         .trans-text { 
             font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #222; line-height: 1.5; 
         }
